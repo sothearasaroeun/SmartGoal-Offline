@@ -1,6 +1,6 @@
 import 'dart:convert';
-import '../../models/enums.dart';
-import '../../models/goal.dart';
+import '../models/goal.dart';
+import '../models/enums.dart';
 import 'storage.dart';
 
 class AppState {
@@ -20,7 +20,6 @@ class AppState {
       List<dynamic> data = jsonDecode(raw);
       goals = data.map((e) => Goal.fromJson(e)).toList();
     } catch (e) {
-      // If corrupted, re-seed
       goals = [];
       _seedSampleGoals();
       await save();
@@ -37,13 +36,21 @@ class AppState {
     save();
   }
 
+  void removeGoal(String id) {
+    goals.removeWhere((g) => g.id == id);
+    save();
+  }
+
   void toggleStep(String goalId, MilestoneType type, String stepId, bool done) {
     for (var g in goals) {
       if (g.id == goalId) {
         for (var m in g.milestones) {
           if (m.type == type) {
             for (var s in m.steps) {
-              if (s.id == stepId) { s.done = done; break; }
+              if (s.id == stepId) {
+                s.done = done;
+                break;
+              }
             }
             m.recalcProgress();
           }
@@ -73,7 +80,7 @@ class AppState {
       DateTime dl = now.add(const Duration(days: 21));
       int durationDays = dl.difference(now).inDays;
       var milestones = generateMilestones(Category.health, "Run 5km without stopping", durationDays, 30);
-      for (var m in milestones) { m.recalcProgress(); }
+      for (var m in milestones) m.recalcProgress();
       Goal g = Goal(
         id: "g_health_1",
         title: "Run 5km without stopping",
@@ -86,12 +93,11 @@ class AppState {
       );
       goals.add(g);
     }
-
     {
       DateTime dl = now.add(const Duration(days: 30));
       int durationDays = dl.difference(now).inDays;
       var milestones = generateMilestones(Category.career, "Learn Flutter basics", durationDays, 45);
-      for (var m in milestones) { m.recalcProgress(); }
+      for (var m in milestones) m.recalcProgress();
       Goal g = Goal(
         id: "g_career_1",
         title: "Learn Flutter basics",
@@ -104,12 +110,11 @@ class AppState {
       );
       goals.add(g);
     }
-
     {
       DateTime dl = now.add(const Duration(days: 25));
       int durationDays = dl.difference(now).inDays;
       var milestones = generateMilestones(Category.finance, "Save \$500 emergency fund", durationDays, 20);
-      for (var m in milestones) { m.recalcProgress(); }
+      for (var m in milestones) m.recalcProgress();
       Goal g = Goal(
         id: "g_finance_1",
         title: "Save \$500 emergency fund",
@@ -122,12 +127,11 @@ class AppState {
       );
       goals.add(g);
     }
-
     {
       DateTime dl = now.add(const Duration(days: 14));
       int durationDays = dl.difference(now).inDays;
       var milestones = generateMilestones(Category.personalGrowth, "Develop a daily mindfulness habit", durationDays, 15);
-      for (var m in milestones) { m.recalcProgress(); }
+      for (var m in milestones) m.recalcProgress();
       Goal g = Goal(
         id: "g_pg_1",
         title: "Develop a daily mindfulness habit",

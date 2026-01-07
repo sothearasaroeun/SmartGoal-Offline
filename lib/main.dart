@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ui/screens/welcome_screen.dart';
 import 'ui/screens/dashboard_screen.dart';
-import 'ui/state/app_state.dart';
+import 'state/app_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

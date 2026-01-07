@@ -9,7 +9,7 @@ class Goal {
   final Category category;
   final DateTime createdAt;
   final DateTime deadline;
-  final int timePerDayMinutes;
+  final int? timePerDayMinutes;
   final int durationDays;
   GoalStatus status;
   List<Milestone> milestones;
@@ -20,7 +20,7 @@ class Goal {
     required this.category,
     required this.createdAt,
     required this.deadline,
-    required this.timePerDayMinutes,
+    this.timePerDayMinutes,
     required this.durationDays,
     required this.milestones,
     this.status = GoalStatus.inProgress,
@@ -59,12 +59,18 @@ class Goal {
 }
 
 
-List<Milestone> generateMilestones(Category cat, String title, int durationDays, int timePerDay) {
+List<Milestone> generateMilestones(
+  Category cat, 
+  String title, 
+  int durationDays, 
+  int? timePerDay,
+  ) {
+    final int minutes = timePerDay ?? 30;
   String intensity = "medium";
   if (durationDays < 14) intensity = "low";
   else if (durationDays > 30) intensity = "high";
-  if (timePerDay < 20 && intensity == "medium") intensity = "low";
-  if (timePerDay > 60 && intensity == "medium") intensity = "high";
+  if (minutes < 20 && intensity == "medium") intensity = "low";
+  if (minutes > 60 && intensity == "medium") intensity = "high";
 
   int stepsPerMilestone = (intensity == "low") ? 3 : (intensity == "medium") ? 5 : 7;
 
@@ -74,10 +80,10 @@ List<Milestone> generateMilestones(Category cat, String title, int durationDays,
   int reviewDays = durationDays - clarifyDays - actDays - strengthenDays;
   if (reviewDays < 1) reviewDays = 1;
 
-  List<StepItem> clarity = buildClaritySteps(cat, stepsPerMilestone, timePerDay);
-  List<StepItem> act = buildActSteps(cat, stepsPerMilestone, timePerDay);
-  List<StepItem> strengthen = buildStrengthenSteps(cat, stepsPerMilestone, timePerDay);
-  List<StepItem> review = buildReviewSteps(cat, stepsPerMilestone, timePerDay);
+  List<StepItem> clarity = buildClaritySteps(cat, stepsPerMilestone, minutes);
+  List<StepItem> act = buildActSteps(cat, stepsPerMilestone, minutes);
+  List<StepItem> strengthen = buildStrengthenSteps(cat, stepsPerMilestone, minutes);
+  List<StepItem> review = buildReviewSteps(cat, stepsPerMilestone, minutes);
 
   scheduleSteps(clarity, 0, clarifyDays);
   scheduleSteps(act, clarifyDays, actDays);

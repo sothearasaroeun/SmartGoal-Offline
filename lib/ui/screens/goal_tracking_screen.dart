@@ -3,7 +3,7 @@ import '../../models/enums.dart';
 import '../../models/goal.dart';
 import '../../ui/widgets/milestone_bar.dart';
 import '../../ui/widgets/step_checkbox.dart';
-import '../state/app_state.dart';
+import '../../state/app_state.dart';
 
 class GoalTrackingScreen extends StatefulWidget {
   final String goalId;

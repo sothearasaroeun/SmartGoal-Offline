@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/goal.dart';
 import '../../models/enums.dart';
-import '../screens/goal_tracking_screen.dart';
 
 class GoalCard extends StatelessWidget {
   final Goal goal;
@@ -64,12 +63,6 @@ class GoalCard extends StatelessWidget {
             ),
           ],
         ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => GoalTrackingScreen(goalId: goal.id)),
-          );
-        },
       ),
     );
   }

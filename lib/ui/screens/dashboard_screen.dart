@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../models/goal.dart';
+import '../../state/app_state.dart';
 import '../../models/enums.dart';
-import '../state/app_state.dart';
 import '../widgets/goal_card.dart';
 import 'choose_category_screen.dart';
 import 'welcome_screen.dart';
+import 'goal_tracking_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -61,37 +63,60 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _categoryHeader(
-                      "Health",
-                      Icons.favorite,
-                      app.countByCategory(Category.health),
-                      primary,
-                    ),
-                    _categoryHeader(
-                      "Career",
-                      Icons.work,
-                      app.countByCategory(Category.career),
-                      primary,
-                    ),
-                    _categoryHeader(
-                      "Finance",
-                      Icons.attach_money,
-                      app.countByCategory(Category.finance),
-                      primary,
-                    ),
-                    _categoryHeader(
-                      "Growth",
-                      Icons.self_improvement,
-                      app.countByCategory(Category.personalGrowth),
-                      primary,
-                    ),
+                    _categoryHeader("Health", Icons.favorite, app.countByCategory(Category.health), primary),
+                    _categoryHeader("Career", Icons.work, app.countByCategory(Category.career), primary),
+                    _categoryHeader("Finance", Icons.attach_money, app.countByCategory(Category.finance), primary),
+                    _categoryHeader("Growth", Icons.self_improvement, app.countByCategory(Category.personalGrowth), primary),
                   ],
                 ),
               ),
               Expanded(
                 child: ListView.builder(
                   itemCount: app.goals.length,
-                  itemBuilder: (_, i) => GoalCard(goal: app.goals[i]),
+                  itemBuilder: (_, i) {
+                    Goal currentGoal = app.goals[i];
+                    return Dismissible(
+                      key: Key(currentGoal.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (direction) {
+                        int deletedIndex = i;
+                        Goal deletedGoal = currentGoal;
+
+                        app.removeGoal(currentGoal.id);
+                        setState(() {});
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text("Goal deleted"),
+                            duration: const Duration(seconds: 3),
+                            action: SnackBarAction(
+                              label: "Undo",
+                              onPressed: () {
+                                app.goals.insert(deletedIndex, deletedGoal);
+                                app.save();
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => GoalTrackingScreen(goalId: currentGoal.id)),
+                          ).then((_) => setState(() {}));
+                        },
+                        child: GoalCard(goal: currentGoal),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -101,37 +126,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _categoryHeader(
-    String name,
-    IconData icon,
-    int count,
-    Color primary,
-  ) {
+  Widget _categoryHeader(String name, IconData icon, int count, Color primary) {
     return Column(
       children: [
         Icon(icon, size: 32, color: primary),
         const SizedBox(height: 4),
-        Text(
-          name,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade100,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            "$count",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: primary,
-            ),
-          ),
+          decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(20)),
+          child: Text("$count", style: TextStyle(fontWeight: FontWeight.bold, color: primary)),
         ),
       ],
     );

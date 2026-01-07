@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/enums.dart';
 import '../../models/goal.dart';
-import '../state/app_state.dart';
+import '../../state/app_state.dart';
 
 class AddGoalScreen extends StatefulWidget {
   final Category category;
@@ -15,7 +15,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _weeksCtrl = TextEditingController();
-  final _minutesCtrl = TextEditingController(text: "30");
+  final _minutesCtrl = TextEditingController();
 
   @override
   void dispose() {
@@ -67,7 +67,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                   validator: (v) {
                     if (v == null || v.isEmpty) return "Enter number of weeks";
                     final n = int.tryParse(v);
-                    if (n == null || n < 1 || n > 52) return "Enter 1–52 weeks";
+                    if (n == null || n < 1 || n > 52) return "Enter 1-52 weeks";
                     return null;
                   },
                 ),
@@ -76,14 +76,14 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                   controller: _minutesCtrl,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    labelText: "How many minutes can you spend per day?",
+                    labelText: "How many minutes can you spend per day? (optional)",
                     border: OutlineInputBorder(),
                     suffixText: "min/day",
                   ),
                   validator: (v) {
-                    if (v == null || v.isEmpty) return "Enter minutes per day";
+                    if (v == null || v.isEmpty) return null;
                     final n = int.tryParse(v);
-                    if (n == null || n < 10 || n > 180) return "Enter 10–180 minutes";
+                    if (n == null || n < 10 || n > 180) return "Enter 10-180 minutes";
                     return null;
                   },
                 ),
@@ -127,7 +127,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final weeks = int.parse(_weeksCtrl.text);
-    final minutesPerDay = int.parse(_minutesCtrl.text);
+    final int? minutesPerDay = _minutesCtrl.text.isEmpty ? null : int.parse(_minutesCtrl.text);
     final now = DateTime.now();
     final deadline = now.add(Duration(days: weeks * 7));
     final durationDays = deadline.difference(now).inDays;
