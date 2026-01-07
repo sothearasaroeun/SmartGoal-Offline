@@ -91,6 +91,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         app.removeGoal(currentGoal.id);
                         setState(() {});
 
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: const Text("Goal deleted"),
@@ -98,6 +100,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             action: SnackBarAction(
                               label: "Undo",
                               onPressed: () {
+                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
                                 app.goals.insert(deletedIndex, deletedGoal);
                                 app.save();
                                 setState(() {});
@@ -106,6 +110,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         );
                       },
+
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
