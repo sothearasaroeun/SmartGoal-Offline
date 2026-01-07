@@ -85,31 +85,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
                       onDismissed: (direction) {
-                        int deletedIndex = i;
-                        Goal deletedGoal = currentGoal;
+  int deletedIndex = i;
+  Goal deletedGoal = currentGoal;
 
-                        app.removeGoal(currentGoal.id);
-                        setState(() {});
+  app.removeGoal(currentGoal.id);
+  setState(() {});
 
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  final messenger = ScaffoldMessenger.of(context);
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text("Goal deleted"),
-                            duration: const Duration(seconds: 3),
-                            action: SnackBarAction(
-                              label: "Undo",
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  messenger.hideCurrentSnackBar();
 
-                                app.goals.insert(deletedIndex, deletedGoal);
-                                app.save();
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        );
-                      },
+  messenger.showSnackBar(
+    SnackBar(
+      content: const Text("Goal deleted"),
+      action: SnackBarAction(
+        label: "Undo",
+        onPressed: () {
+          messenger.hideCurrentSnackBar();
+          app.goals.insert(deletedIndex, deletedGoal);
+          app.save();
+          setState(() {});
+        },
+      ),
+    ),
+  );
+
+  Future.delayed(const Duration(seconds: 3), () {
+    messenger.hideCurrentSnackBar();
+  });
+},
 
                       child: GestureDetector(
                         onTap: () {
